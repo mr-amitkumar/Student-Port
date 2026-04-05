@@ -1,0 +1,21 @@
+{% extends 'portal/base.html' %}
+{% block title %}Confirm Delete — EduPortal{% endblock %}
+{% block page_title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<div class="confirm-box">
+  <div class="confirm-icon">🗑️</div>
+  <h2>Delete {{ type }}?</h2>
+  <p>
+    You are about to permanently delete <strong>"{{ object }}"</strong>.
+    This action <strong>cannot be undone</strong>.
+  </p>
+  <div class="confirm-actions">
+    <form method="post" style="display:inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    </form>
+    <a href="javascript:history.back()" class="btn btn-outline">Cancel</a>
+  </div>
+</div>
+{% endblock %}

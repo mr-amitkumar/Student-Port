@@ -1,0 +1,47 @@
+{% extends 'portal/base.html' %}
+{% block title %}Notices — EduPortal{% endblock %}
+{% block page_title %}Notices{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h2>Notices & Announcements</h2><div class="breadcrumb">Communication / Notices</div></div>
+  <a href="{% url 'notice_add' %}" class="btn btn-primary">📢 Post Notice</a>
+</div>
+
+<div style="display:grid;gap:16px">
+  {% for notice in notices %}
+  <div class="card">
+    <div class="card-body">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:18px">📢</span>
+            <h3 style="font-size:16px;font-weight:700">{{ notice.title }}</h3>
+            {% if notice.is_active %}
+            <span class="badge badge-success">Active</span>
+            {% else %}
+            <span class="badge badge-gray">Inactive</span>
+            {% endif %}
+          </div>
+          <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:10px">{{ notice.content }}</p>
+          <div style="font-size:12px;color:var(--text-light)">
+            Posted by <strong>{{ notice.posted_by.get_full_name|default:notice.posted_by.username }}</strong>
+            on {{ notice.created_at|date:"d M Y, g:i A" }}
+          </div>
+        </div>
+        <a href="{% url 'notice_delete' notice.pk %}" class="btn btn-icon" style="background:#fef2f2;border:1.5px solid #fecaca;color:#ef4444;flex-shrink:0" title="Delete">🗑</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="card">
+    <div class="card-body" style="text-align:center;padding:60px">
+      <div style="font-size:48px;margin-bottom:12px">📢</div>
+      <h3 style="font-size:18px;margin-bottom:8px">No notices yet</h3>
+      <p style="color:var(--text-muted);margin-bottom:20px">Post a notice to communicate with students and staff.</p>
+      <a href="{% url 'notice_add' %}" class="btn btn-primary">Post First Notice</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

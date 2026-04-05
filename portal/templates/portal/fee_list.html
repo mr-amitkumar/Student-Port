@@ -1,0 +1,70 @@
+{% extends 'portal/base.html' %}
+{% block title %}Fee Records — EduPortal{% endblock %}
+{% block page_title %}Fee Records{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h2>Fee Records</h2><div class="breadcrumb">Finance / All Fee Records</div></div>
+  <a href="{% url 'fee_add' %}" class="btn btn-primary">+ Add Fee Record</a>
+</div>
+
+<div class="stats-grid" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+  <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value">₹{{ total_collected|floatformat:0 }}</div><div class="stat-label">Total Collected</div></div></div>
+  <div class="stat-card"><div class="stat-icon amber">⏳</div><div><div class="stat-value">₹{{ total_pending|floatformat:0 }}</div><div class="stat-label">Total Pending</div></div></div>
+</div>
+
+<form method="get">
+  <div class="search-bar">
+    <div class="search-input-wrap" style="flex:2">
+      <span class="search-icon">🔍</span>
+      <input type="text" name="q" value="{{ query }}" class="form-input" placeholder="Search by student name or transaction ID…" />
+    </div>
+    <select name="status" class="form-input" style="max-width:150px">
+      <option value="">All Status</option>
+      <option value="paid" {% if selected_status == 'paid' %}selected{% endif %}>Paid</option>
+      <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+      <option value="partial" {% if selected_status == 'partial' %}selected{% endif %}>Partial</option>
+      <option value="waived" {% if selected_status == 'waived' %}selected{% endif %}>Waived</option>
+    </select>
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a href="{% url 'fee_list' %}" class="btn btn-outline">Clear</a>
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Student</th><th>Type</th><th>Amount</th><th>Paid</th><th>Balance</th><th>Due Date</th><th>Mode</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for f in fees %}
+        <tr>
+          <td>
+            <a href="{% url 'student_detail' f.student.pk %}" style="font-weight:700;color:var(--primary)">{{ f.student.full_name }}</a>
+            <div style="font-size:11.5px;color:var(--text-muted)">{{ f.student.student_id }}</div>
+          </td>
+          <td>{{ f.get_fee_type_display }}</td>
+          <td style="font-weight:700">₹{{ f.amount }}</td>
+          <td style="color:var(--success);font-weight:600">₹{{ f.paid_amount }}</td>
+          <td style="{% if f.balance > 0 %}color:var(--danger){% else %}color:var(--success){% endif %};font-weight:600">₹{{ f.balance }}</td>
+          <td style="font-size:12.5px">{{ f.due_date|date:"d M Y" }}</td>
+          <td>{{ f.get_payment_mode_display|default:"—" }}</td>
+          <td><span class="badge {% if f.status == 'paid' %}badge-success{% elif f.status == 'pending' %}badge-warning{% elif f.status == 'partial' %}badge-info{% else %}badge-gray{% endif %}">{{ f.get_status_display }}</span></td>
+          <td>
+            <div style="display:flex;gap:6px">
+              <a href="{% url 'fee_edit' f.pk %}" class="btn btn-outline btn-icon" title="Edit">✏️</a>
+              <a href="{% url 'fee_delete' f.pk %}" class="btn btn-icon" style="background:#fef2f2;border:1.5px solid #fecaca;color:#ef4444" title="Delete">🗑</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center;padding:48px;color:var(--text-muted)">
+          No fee records found. <a href="{% url 'fee_add' %}" style="color:var(--primary);font-weight:600">Add one →</a>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends 'portal/base.html' %}
+{% block title %}{{ title }} — EduPortal{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>{{ title }}</h2>
+    <div class="breadcrumb">Students / {{ title }}</div>
+  </div>
+  <a href="{% url 'student_list' %}" class="btn btn-outline">← Back to Students</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><div class="card-title">🧑 Personal Information</div></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Student ID *</label>
+          {{ form.student_id }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Roll Number</label>
+          {{ form.roll_number }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          {{ form.first_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          {{ form.last_name }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email *</label>
+          {{ form.email }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          {{ form.phone }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date of Birth</label>
+          {{ form.date_of_birth }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          {{ form.gender }}
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Address</label>
+          {{ form.address }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><div class="card-title">🎓 Academic Information</div></div>
+    <div class="card-body">
+      <div class="form-grid three">
+        <div class="form-group">
+          <label class="form-label">Course *</label>
+          {{ form.course }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department *</label>
+          {{ form.department }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester</label>
+          {{ form.semester }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          {{ form.status }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><div class="card-title">📷 Photo</div></div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">Student Photo</label>
+        {{ form.photo }}
+      </div>
+    </div>
+  </div>
+
+  {% if form.errors %}
+  <div class="alert alert-error">Please fix the errors below and try again.</div>
+  {% for field in form %}{% for error in field.errors %}
+  <div class="alert alert-error"><strong>{{ field.label }}:</strong> {{ error }}</div>
+  {% endfor %}{% endfor %}
+  {% endif %}
+
+  <div style="display:flex;gap:12px">
+    <button type="submit" class="btn btn-primary">💾 Save Student</button>
+    <a href="{% url 'student_list' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+{% endblock %}

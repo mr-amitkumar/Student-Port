@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}EduPortal{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'portal/css/style.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <h1>EduPortal</h1>
+        <span>Student Management</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+
+      <div class="nav-section-label">Students</div>
+      <a href="{% url 'student_list' %}" class="nav-item {% if 'student' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">👥</span> All Students
+      </a>
+      <a href="{% url 'student_add' %}" class="nav-item">
+        <span class="nav-icon">➕</span> Add Student
+      </a>
+
+      <div class="nav-section-label">Academic</div>
+      <a href="{% url 'attendance_list' %}" class="nav-item {% if 'attendance' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">📋</span> Attendance
+      </a>
+      <a href="{% url 'attendance_mark' %}" class="nav-item">
+        <span class="nav-icon">✅</span> Mark Attendance
+      </a>
+
+      <div class="nav-section-label">Finance</div>
+      <a href="{% url 'fee_list' %}" class="nav-item {% if 'fee' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">💰</span> Fee Records
+      </a>
+      <a href="{% url 'fee_add' %}" class="nav-item">
+        <span class="nav-icon">💳</span> Add Fee
+      </a>
+
+      <div class="nav-section-label">Communication</div>
+      <a href="{% url 'notice_list' %}" class="nav-item {% if 'notice' in request.resolver_match.url_name %}active{% endif %}">
+        <span class="nav-icon">📢</span> Notices
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar">{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</div>
+        <div>
+          <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="user-role">Administrator</div>
+        </div>
+      </div>
+      <a href="{% url 'logout' %}">
+        <button class="btn-logout">🚪 Log Out</button>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+      <div class="topbar-date" id="currentDate"></div>
+    </header>
+
+    <div class="page-content">
+      {% if messages %}
+      <div class="messages-container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }}">
+          {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('visible');
+}
+// Set current date
+const d = new Date();
+document.getElementById('currentDate').textContent = d.toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

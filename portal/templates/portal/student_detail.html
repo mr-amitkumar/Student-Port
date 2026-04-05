@@ -1,0 +1,109 @@
+{% extends 'portal/base.html' %}
+{% block title %}{{ student.full_name }} — EduPortal{% endblock %}
+{% block page_title %}Student Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Student Profile</h2>
+    <div class="breadcrumb">Students / {{ student.full_name }}</div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <a href="{% url 'student_edit' student.pk %}" class="btn btn-primary">✏️ Edit</a>
+    <a href="{% url 'student_delete' student.pk %}" class="btn btn-outline" style="color:var(--danger);border-color:var(--danger)">🗑 Delete</a>
+    <a href="{% url 'student_list' %}" class="btn btn-outline">← Back</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="detail-header">
+    {% if student.photo %}
+    <img src="{{ student.photo.url }}" class="detail-photo" alt="{{ student.full_name }}" />
+    {% else %}
+    <div class="avatar lg" style="border-radius:16px;width:80px;height:80px;font-size:26px">{{ student.first_name|first }}{{ student.last_name|first }}</div>
+    {% endif %}
+    <div class="detail-info">
+      <h2>{{ student.full_name }}</h2>
+      <div class="sid">{{ student.student_id }}</div>
+      <div class="detail-meta">
+        <span>🎓 {{ student.course }}</span>
+        <span>🏛 {{ student.department }}</span>
+        <span>📚 Semester {{ student.semester }}</span>
+        <span>📅 Joined {{ student.admission_date|date:"M Y" }}</span>
+      </div>
+      <div style="margin-top:10px">
+        <span class="badge {% if student.status == 'active' %}badge-success{% elif student.status == 'graduated' %}badge-primary{% else %}badge-gray{% endif %}">
+          {{ student.get_status_display }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-item"><div class="info-key">Email</div><div class="info-val">{{ student.email }}</div></div>
+    <div class="info-item"><div class="info-key">Phone</div><div class="info-val">{{ student.phone|default:"—" }}</div></div>
+    <div class="info-item"><div class="info-key">Gender</div><div class="info-val">{{ student.get_gender_display|default:"—" }}</div></div>
+    <div class="info-item"><div class="info-key">Date of Birth</div><div class="info-val">{{ student.date_of_birth|date:"d M Y"|default:"—" }}</div></div>
+    <div class="info-item"><div class="info-key">Roll Number</div><div class="info-val">{{ student.roll_number|default:"—" }}</div></div>
+    <div class="info-item"><div class="info-key">Added By</div><div class="info-val">{{ student.added_by.get_full_name|default:student.added_by.username|default:"—" }}</div></div>
+  </div>
+  {% if student.address %}
+  <div style="padding:0 24px 20px"><span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px">Address</span><div style="margin-top:4px;font-size:14px">{{ student.address }}</div></div>
+  {% endif %}
+</div>
+
+<!-- Fee Summary -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
+  <div class="stat-card"><div class="stat-icon cyan">💰</div><div><div class="stat-value">₹{{ total_fee|floatformat:0 }}</div><div class="stat-label">Total Fee</div></div></div>
+  <div class="stat-card"><div class="stat-icon green">✅</div><div><div class="stat-value">₹{{ paid_fee|floatformat:0 }}</div><div class="stat-label">Paid</div></div></div>
+  <div class="stat-card"><div class="stat-icon amber">📋</div><div><div class="stat-value">{{ attendance_pct }}%</div><div class="stat-label">Attendance ({{ present_days }}/{{ total_days }})</div></div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <!-- Fee Records -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Fee Records</div>
+      <a href="{% url 'fee_add' %}" class="btn btn-primary btn-sm">+ Add</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for f in fees %}
+          <tr>
+            <td>{{ f.get_fee_type_display }}</td>
+            <td>₹{{ f.amount }}</td>
+            <td><span class="badge {% if f.status == 'paid' %}badge-success{% elif f.status == 'pending' %}badge-warning{% else %}badge-info{% endif %}">{{ f.get_status_display }}</span></td>
+          </tr>
+          {% empty %}<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:20px">No fee records</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Attendance -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recent Attendance</div>
+      <a href="{% url 'attendance_mark' %}" class="btn btn-primary btn-sm">+ Mark</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for a in attendances %}
+          <tr>
+            <td style="font-size:12px">{{ a.date|date:"d M" }}</td>
+            <td>{{ a.subject }}</td>
+            <td><span class="badge {% if a.status == 'present' %}badge-success{% elif a.status == 'absent' %}badge-danger{% elif a.status == 'late' %}badge-warning{% else %}badge-gray{% endif %}">{{ a.get_status_display }}</span></td>
+          </tr>
+          {% empty %}<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:20px">No attendance records</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

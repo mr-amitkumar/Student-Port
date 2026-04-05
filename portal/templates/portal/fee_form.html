@@ -1,0 +1,76 @@
+{% extends 'portal/base.html' %}
+{% block title %}{{ title }} — EduPortal{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h2>{{ title }}</h2><div class="breadcrumb">Finance / {{ title }}</div></div>
+  <a href="{% url 'fee_list' %}" class="btn btn-outline">← Back to Fees</a>
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header"><div class="card-title">💳 Fee Details</div></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-label">Student *</label>
+          {{ form.student }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fee Type *</label>
+          {{ form.fee_type }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Semester</label>
+          {{ form.semester }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total Amount (₹) *</label>
+          {{ form.amount }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Paid Amount (₹)</label>
+          {{ form.paid_amount }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Due Date *</label>
+          {{ form.due_date }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Paid Date</label>
+          {{ form.paid_date }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Payment Mode</label>
+          {{ form.payment_mode }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Transaction ID</label>
+          {{ form.transaction_id }}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status *</label>
+          {{ form.status }}
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Remarks</label>
+          {{ form.remarks }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if form.errors %}
+  {% for field in form %}{% for error in field.errors %}
+  <div class="alert alert-error"><strong>{{ field.label }}:</strong> {{ error }}</div>
+  {% endfor %}{% endfor %}
+  {% endif %}
+
+  <div style="display:flex;gap:12px">
+    <button type="submit" class="btn btn-primary">💾 Save Fee Record</button>
+    <a href="{% url 'fee_list' %}" class="btn btn-outline">Cancel</a>
+  </div>
+</form>
+{% endblock %}
